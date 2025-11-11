@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - HORMOCARE+{% endblock %}
+
+{% block content %}
+
+<!-- Weekly Report Download Button (top right corner) -->
+<div style="width:100%; text-align:right; margin-bottom: 2rem;">
+    <button class="btn" style="background:#FF3F7F; color:#fff; font-weight: bold; padding:8px 20px; border-radius:8px;"
+        onclick="downloadWeeklyReport()">
+        📝 Download Weekly Health Report (PDF)
+    </button>
+</div>
+
+<div style="margin-bottom:1.5rem;">
+    <h2>{{ greeting }}, {{ name }}!</h2>
+</div>
+
+<!-- DAILY PERIOD END PROMPT -->
+{% if active_period %}
+<div id="periodEndPrompt" style="margin:32px 0; padding:18px; background:#fff7fb; border-radius:11px;">
+    <span>Did your period end?</span>
+    <button class="btn" onclick="endPeriod()">Yes</button>
+</div>
+<script>
+async function endPeriod() {
+  let res = await fetch("/end_period", {
+      method:"POST", headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ cycle_id: "{{ active_period._id }}" })
+  });
+  let data = await res.json();
+  if(data.success) location.reload();
+}
+</script>
+{% endif %}
+
+<!-- CYCLE CARD -->
+<div class="card">
+  <h2 class="card-title">CYCLE INFORMATION</h2>
+  {% if user.last_period_date and user.cycle_length %}
+    {% set cycle_length = user.cycle_length | int %}
+    {% set start_date = todatetime(user.last_period_date) %}
+    {% set today = now() %}
+    {% set cycle_day = (today.date() - start_date.date()).days + 1 %}
+    <p><strong>CYCLE DAY:</strong> Day {{ cycle_day }} of {{ cycle_length }}</p>
+    <p><strong>LAST PERIOD STARTED:</strong> {{ user.last_period_date }}</p>
+    {% set predicted_date = (start_date + timedelta(days=cycle_length)).date().isoformat() %}
+    <p><strong>NEXT PERIOD PREDICTED:</strong> {{ predicted_date }}</p>
+    <button id="recordPeriodBtn" class="btn" style="margin-top:10px;">Record New Period Start</button>
+  {% else %}
+    <p>No cycle data available.</p>
+    <button id="recordPeriodBtn" class="btn" style="margin-top:10px;">Record New Period Start</button>
+  {% endif %}
+</div>
+
+<!-- RECORD PERIOD START POPUP -->
+<div id="periodPopup" style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%,0); background:#fff; padding:32px; box-shadow:0 4px 30px #FF3F7F44; border-radius:18px; z-index:1000;">
+    <h3>Record New Period Start</h3>
+    <label>Start Date: <input type="date" id="newPeriodDate"></label>
+    <button class="btn" onclick="submitPeriod()">Submit</button>
+    <button class="btn" onclick="closePeriodPopup()" style="background:#ddd;color:#333;">Close</button>
+    <div id="periodMsg"></div>
+</div>
+<script>
+document.getElementById('recordPeriodBtn').onclick = function() {
+  document.getElementById('periodPopup').style.display = 'block';
+}
+function closePeriodPopup() { document.getElementById('periodPopup').style.display = 'none'; }
+async function submitPeriod() {
+  let date = document.getElementById('newPeriodDate').value;
+  if(!date) return document.getElementById('periodMsg').innerText = "Please select a date.";
+  let res = await fetch("/record_period", {
+    method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({date: date})
+  });
+  let data = await res.json();
+  if(data.success) {
+    document.getElementById('periodMsg').innerText = "Recorded!";
+    setTimeout(()=>closePeriodPopup(),1500);
+    location.reload();
+  } else {
+    document.getElementById('periodMsg').innerText = "Error: " + (data.message||"Try again.");
+  }
+}
+</script>
+
+<!-- DIET & ACTIVITY CARDS -->
+<div class="card">
+    <h2 class="card-title">DIET DETAILS</h2>
+    {% if diet %}
+        <p>
+            <strong>CONSUMED CALORIES:</strong> {{ diet.calories_consumed }}/ Total Allowed: {{ calorie_limit }}
+        </p>
+        <ul style="margin-left: 20px; margin-top: 10px;">
+            <li>Protein: {{ diet.protein }}g</li>
+            <li>Carbs: {{ diet.carbs }}g</li>
+            <li>Fats: {{ diet.fats }}g</li>
+        </ul>
+    {% else %}
+        <p>No diet data for today.</p>
+        <p>Your daily calorie limit: <b>{{ calorie_limit }}</b></p>
+    {% endif %}
+    <button class="btn" style="margin-top: 15px;" onclick="location.href='{{ url_for('diet') }}'">
+        ADD FOOD CONSUMED
+    </button>
+</div>
+
+<div class="card">
+    <h2 class="card-title">ACTIVITY DETAILS</h2>
+    {% if activity %}
+        <p><strong>Workout Type:</strong>
+            {% if activity.activities %}
+                {% for a in activity.activities %}
+                    {{ a.workout_type|capitalize }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            {% else %} N/A {% endif %}
+        </p>
+        <p><strong>Exercises:</strong>
+            {% if activity.activities %}
+                {% for a in activity.activities %}
+                    {% for ex in a.exercises %}
+                        {{ ex.name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            {% else %} N/A {% endif %}
+        </p>
+        <p><strong>Duration:</strong>
+            {% if activity.activities %}
+                {% for a in activity.activities %}
+                    {{ a.duration // 60 }} min{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            {% else %} N/A {% endif %}
+        </p>
+        <p><strong>Total Calories Burnt / Goal:</strong> {{ activity.calories_burnt }}/{{ activity.goal_calories or activity_goal }}</p>
+        <p><strong>Step Count / Goal Steps Perday:</strong> {{ activity.steps }}/{{ activity.goal_steps or step_goal }}</p>
+        <p><strong>Activity Hours / Goal Hours:</strong> {{ activity.hours }}/{{ activity.goal_hours or activity_goal }}</p>
+        <p><strong>Last Updated:</strong> {{ activity.updated_at }}</p>
+    {% else %}
+        <p>No activity data for today. Start tracking your activities!</p>
+        <ul>
+            <li>Calories Burn Goal: {{ activity_goal }}</li>
+            <li>Step Goal: {{ step_goal }}</li>
+            <li>Activity Hours Goal: {{ activity_goal }}</li>
+        </ul>
+    {% endif %}
+    <button class="btn" style="margin-top: 15px;" onclick="location.href='{{ url_for('activity') }}'">
+        VIEW ACTIVITY DETAILS
+    </button>
+</div>
+
+<!-- JavaScript function for downloading weekly report PDF -->
+<script>
+function downloadWeeklyReport() {
+    window.open('/download_weekly_report_pdf', '_blank');
+}
+</script>
+
+{% endblock %}

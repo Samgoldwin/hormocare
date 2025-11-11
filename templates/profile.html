@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Profile | HORMOCARE+{% endblock %}
+{% block page_title %}<span style="font-size:2.4rem;">Profile</span>{% endblock %}
+
+{% block content %}
+<style>
+    .profile-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100vw;
+        min-height: 80vh;
+        justify-content: start;
+        padding: 0;
+        margin: 0;
+        background: linear-gradient(135deg, var(--primary-lighter), var(--sidebar-light) 70%);
+    }
+    .profile-card {
+        width: 95vw;
+        max-width: 850px;
+        background: var(--card-light);
+        margin: 40px auto 0 auto;
+        padding: 38px 34px 30px 34px;
+        border-radius: 18px;
+        box-shadow: 0 8px 36px 0 rgba(255,63,127, .09);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        transition: box-shadow .3s;
+    }
+    .profile-card:hover {
+        box-shadow: 0 12px 44px 0 rgba(255,63,127,.18);
+    }
+    .profile-name {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: var(--primary-darker);
+        margin-bottom: .5em;
+        letter-spacing: 1.5px;
+        text-shadow: 0 2px 0 var(--primary-lighter);
+    }
+    .profile-list {
+        width: 100%;
+        margin-top: 1.4em;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2em 1.4em;
+        font-size: 1.25rem;
+    }
+    .profile-list li {
+        list-style: none;
+        margin-bottom: .3em;
+        font-size: 1.2rem;
+    }
+    .profile-label {
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-right: .4em;
+    }
+    @media (max-width: 900px) {
+        .profile-card {padding: 28px 8px;}
+        .profile-list {grid-template-columns: 1fr;}
+        .profile-name {font-size: 2.2rem;}
+    }
+    @media (max-width: 600px) {
+        .profile-card {
+            width: 99vw;
+            border-radius: 0;
+            box-shadow: none;
+            padding: 18px 2vw;
+        }
+        .profile-name {font-size: 1.55rem;}
+        .profile-list {font-size: 1.06rem;}
+    }
+</style>
+<div class="profile-section">
+    <div class="profile-card">
+        <div class="profile-name">{{ user.full_name|upper }}</div>
+        <ul class="profile-list">
+            <li><span class="profile-label">Email:</span> {{ user.email }}</li>
+            <li><span class="profile-label">Age:</span> {{ user.age }}</li>
+            <li><span class="profile-label">Weight:</span> {{ user.weight }}</li>
+            <li><span class="profile-label">Height:</span> {{ user.height }}</li>
+            <li><span class="profile-label">BMI:</span> {{ user.bmi }}</li>
+            <li><span class="profile-label">Blood Group:</span> {{ user.blood_group }}</li>
+            <li><span class="profile-label">Pulse Rate:</span> {{ user.pulse_rate }}</li>
+            <li><span class="profile-label">Cycle Length:</span> {{ user.cycle_length }}</li>
+            <li><span class="profile-label">Cycle Months:</span> {{ user.cycle_months }}</li>
+            <li><span class="profile-label">Marriage Status:</span> {{ user.marriage_status }}</li>
+            <li><span class="profile-label">Waist:</span> {{ user.waist }}</li>
+            <li><span class="profile-label">Hip:</span> {{ user.hip }}</li>
+            <li><span class="profile-label">Waist-Hip Ratio:</span> {{ user.whratio }}</li>
+            <li><span class="profile-label">PCOS Symptoms:</span>
+                Bloated: {{ user.bloated }} |
+                Facial Hair: {{ user.facial_hair }} |
+                Chest Hair: {{ user.chest_hair }} |
+                Obesity: {{ user.obesity }}
+            </li>
+            <li><span class="profile-label">Other Health:</span>
+                Mood Swings: {{ user.mood_swings }} |
+                Stress: {{ user.stress }} |
+                Irregular Sleep: {{ user.irregular_sleep }} |
+                Weight Gain: {{ user.weight_gain }} |
+                Hair Growth: {{ user.hair_growth }}<br>
+                Skin Darkening: {{ user.skin_darkening }} |
+                Hair Loss: {{ user.hair_loss }} |
+                Pimples: {{ user.pimples }}
+            </li>
+            <li><span class="profile-label">Lifestyle:</span>
+                Fast Food: {{ user.fast_food }} |
+                Regular Exercise: {{ user.reg_exercise }}</li>
+            <li><span class="profile-label">Pregnant:</span> {{ user.pregnant }}</li>
+            <li><span class="profile-label">Abortions:</span> {{ user.abortions }}</li>
+            <li><span class="profile-label">Dark Mode:</span> {{ "Yes" if user.dark_mode else "No" }}</li>
+            <li><span class="profile-label">Basic History:</span> {{ user.basic_history }}</li>
+            <li><span class="profile-label">Joined:</span>
+                {{ user.created_at.strftime('%Y-%m-%d') if user.created_at else user.created_at }}
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

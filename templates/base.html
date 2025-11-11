@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HORMOCARE+{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FF3F7F;
+            --primary-dark: #CC3266;
+            --primary-darker: #99254C;
+            --primary-light: #FF5C92;
+            --primary-lighter: #FF8FB3;
+            --bg-light: #FFFFFF;
+            --text-light: #333333;
+            --sidebar-light: #F5F5F5;
+            --card-light: #FFFFFF;
+        }
+
+        [data-theme="dark"] {
+            --primary: #9929EA;
+            --primary-dark: #7A21BB;
+            --primary-darker: #5B198C;
+            --primary-light: #AD4DEE;
+            --primary-lighter: #C277F2;
+            --bg-light: #1A1A2E;
+            --text-light: #EAEAEA;
+            --sidebar-light: #16213E;
+            --card-light: #0F3460;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-light);
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 63, 127, 0.3);
+        }
+
+        [data-theme="dark"] .logo {
+            box-shadow: 0 4px 15px rgba(153, 41, 234, 0.3);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 15px 20px;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(255, 63, 127, 0.4);
+        }
+
+        [data-theme="dark"] .nav-link:hover {
+            box-shadow: 0 4px 12px rgba(153, 41, 234, 0.4);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-darker), var(--primary-dark));
+            box-shadow: 0 4px 12px rgba(255, 63, 127, 0.5);
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .nav-link.active {
+            box-shadow: 0 4px 12px rgba(153, 41, 234, 0.5);
+        }
+
+        .dark-mode-toggle {
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: var(--primary-light);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background: var(--primary);
+            box-shadow: 0 4px 12px rgba(255, 63, 127, 0.4);
+        }
+
+        [data-theme="dark"] .dark-mode-toggle:hover {
+            box-shadow: 0 4px 12px rgba(153, 41, 234, 0.4);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(255, 63, 127, 0.3);
+        }
+
+        [data-theme="dark"] .header {
+            box-shadow: 0 4px 15px rgba(153, 41, 234, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .card {
+            background-color: var(--card-light);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 6px 20px rgba(255, 63, 127, 0.2);
+            transform: translateY(-2px);
+        }
+
+        [data-theme="dark"] .card:hover {
+            box-shadow: 0 6px 20px rgba(153, 41, 234, 0.2);
+        }
+
+        .card-title {
+            color: var(--primary);
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 63, 127, 0.3);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            box-shadow: 0 6px 16px rgba(255, 63, 127, 0.4);
+            transform: translateY(-2px);
+        }
+
+        [data-theme="dark"] .btn {
+            box-shadow: 0 4px 12px rgba(153, 41, 234, 0.3);
+        }
+
+        [data-theme="dark"] .btn:hover {
+            box-shadow: 0 6px 16px rgba(153, 41, 234, 0.4);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid var(--primary-lighter);
+            border-radius: 8px;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(255, 63, 127, 0.3);
+        }
+
+        [data-theme="dark"] input:focus,
+        [data-theme="dark"] textarea:focus,
+        [data-theme="dark"] select:focus {
+            box-shadow: 0 0 10px rgba(153, 41, 234, 0.3);
+        }
+
+        label {
+            font-weight: 500;
+            color: var(--text-light);
+            margin-top: 10px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">HORMOCARE+ (LOGO)</div>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">DASHBOARD</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('diet') }}" class="nav-link {% if request.endpoint == 'diet' %}active{% endif %}">DIET</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('activity') }}" class="nav-link {% if request.endpoint == 'activity' %}active{% endif %}">ACTIVITY</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('journal') }}" class="nav-link {% if request.endpoint == 'journal' %}active{% endif %}">JOURNAL</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('profile') }}" class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}">PROFILE</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('alagi') }}" class="nav-link {% if request.endpoint == 'alagi' %}active{% endif %}">ALAGI</a>
+                    </li>
+                </ul>
+            </nav>
+            <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 DARK MODE</button>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div>
+                    <h1>{% block page_title %}HORMOCARE+{% endblock %}</h1>
+                </div>
+                <div class="user-info">
+                                 <span>USER ID: JSP25001</span>
+                    <a href="{{ url_for('logout') }}" class="logout-btn">LOGOUT</a>
+                </div>
+            </header>
+
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+    <script>
+        // Load theme preference
+        const currentTheme = localStorage.getItem('theme') || '{{ "dark" if user and user.dark_mode else "light" }}';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+
+        function toggleDarkMode() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Save to server
+            fetch('/toggle_dark_mode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+        }
+    </script>
+
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Alagi Chatbot | HORMOCARE+{% endblock %}
+
+{% block page_title %}Alagi PCOS Chatbot{% endblock %}
+
+{% block content %}
+<div class="card" id="alagi-chat-card">
+    <div class="card-title">🫧 Alagi • Your PCOS Conversation Assistant</div>
+    <div id="chat-window" style="height:350px;overflow-y:auto;background:#fff5fa;margin-bottom:18px;border-radius:10px;padding:20px; border:1.5px solid var(--primary-light); font-size:16px;">
+        <!-- Chat bubbles will be appended here -->
+    </div>
+    <form id="chat-form" onsubmit="sendChat(event)">
+        <label for="chat-input">How are you feeling today?</label>
+        <input id="chat-input" type="text" placeholder="Type here..." autocomplete="off" style="margin-bottom:12px;" />
+        <button type="submit" class="btn">Send</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Add marked.js CDN for markdown rendering -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+function appendMsg(sender, msg, isMarkdown = false) {
+    const window = document.getElementById('chat-window');
+    const div = document.createElement('div');
+    div.style.marginBottom = "12px";
+    if (isMarkdown) {
+        // Render Markdown to HTML for Alagi's response
+        div.innerHTML =
+            `<b style='color:var(--primary);'>${sender}:</b> <span>${marked.parse(msg)}</span>`;
+    } else {
+        // User messages as plaintext
+        div.innerHTML =
+            `<b style='color:var(--primary);'>${sender}:</b> <span>${msg}</span>`;
+    }
+    window.appendChild(div);
+    window.scrollTop = window.scrollHeight;
+}
+
+function sendChat(e) {
+    e.preventDefault();
+    const input = document.getElementById('chat-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+    appendMsg("You", msg);   // User message (not markdown)
+    input.value = '';
+    fetch('/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: msg})
+    })
+    .then(res => res.json())
+    .then(data => {
+        appendMsg("Alagi", data.reply, true); // Render Alagi's reply as markdown
+    })
+    .catch(() => appendMsg("Alagi", "Sorry, something went wrong.", false));
+}
+</script>
+{% endblock %}

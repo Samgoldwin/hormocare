@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block title %}Diet - HORMOCARE+{% endblock %}
+{% block page_title %}DIET{% endblock %}
+
+{% block content %}
+<div class="grid-container">
+    <!-- LEFT: Automatic Diet Plan Card -->
+    <div class="card">
+        <h2 class="card-title">TODAY'S DIET PLAN</h2>
+        {% if meals %}
+            {% for meal in ['breakfast', 'lunch', 'snacks', 'dinner'] %}
+            <div style="margin-bottom:18px;">
+                <h4 style="color:var(--primary);">{{ meal|capitalize }}</h4>
+                <ul>
+                    {% for food in meals.get(meal, []) %}
+                        <li>
+                            {{ food['food_name'] }} 
+                            ({{ food.get('energy_kcal', 0) }} kcal,
+                            Protein: {{ food.get('protein_g', 0) }}g,
+                            Carbs: {{ food.get('carb_g', 0) }}g,
+                            Fats: {{ food.get('fat_g', 0) }}g)
+                        </li>
+                    {% endfor %}
+                    {% if not meals.get(meal, []) %}
+                        <li><em>No food planned for this meal.</em></li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No weekly diet plan set for today.<br>
+            <form method="post" action="{{ url_for('create_weekly_diet') }}">
+                <button class="btn" type="submit">Generate Weekly Diet Plan</button>
+            </form>
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- RIGHT: Food Log Card -->
+    <div class="card">
+        <h2 class="card-title">FOOD LOG</h2>
+        {% for meal in ["breakfast", "lunch", "snacks", "dinner"] %}
+        <div class="meal-section" id="{{ meal }}">
+            <h4 style="color: var(--primary); margin-bottom: 5px;">{{ meal|capitalize }}</h4>
+            <ul id="{{ meal }}-list" class="meal-list"></ul>
+            <button class="btn" type="button" onclick="openFoodSearch('{{ meal }}')">Add Food</button>
+        </div>
+        {% endfor %}
+        <div id="totalsDisplay" class="totals-display">
+            <h5>Total Today</h5>
+            Protein: <span id="proteinTotal">0</span> / <span id="proteinGoal">60</span>g<br>
+            Carbs: <span id="carbTotal">0</span>g<br>
+            Fats: <span id="fatTotal">0</span>g<br>
+            Calories: <span id="calTotal">0</span>kcal
+        </div>
+    </div>
+
+    <div class="card" style="grid-column: span 2;">
+        <h2 class="card-title">DIET HISTORY (LAST 10 DAYS)</h2>
+        <canvas id="dietChart" style="max-height: 300px;"></canvas>
+        <a href="{{ url_for('download_weekly_diet') }}" class="btn" style="margin-bottom:15px;" download>
+    Download Weekly Diet as PDF
+</a>
+
+    </div>
+</div>
+
+<!-- FOOD SEARCH MODAL -->
+<div id="foodModal">
+    <h4>Search Food</h4>
+    <input type="text" id="foodSearchInput" placeholder="Enter food name" oninput="searchFoodDB()">
+    <ul id="foodSearchResults"></ul>
+    <button class="btn" onclick="closeFoodModal()">Close</button>
+</div>
+
+<style>
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+@media (max-width: 700px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+}
+.card {
+    padding: 18px 20px;
+    background: #fff;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+.meal-section { margin-bottom: 25px; }
+.totals-display {
+    margin-top: 20px;
+    padding: 10px;
+    background: var(--primary-lighter);
+    color: white;
+    border-radius: 6px;
+}
+#foodModal {
+    display: none;
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30%;
+    max-width: 400px;
+    background: white;
+    z-index: 1000;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px #888;
+    overflow-y: auto;
+    max-height: 70vh;
+}
+@media (max-width: 600px) {
+    #foodModal {
+        width: 80%;
+        top: 5%;
+        max-height: 80vh;
+    }
+}
+.food-item { animation: slideIn 0.3s ease; }
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px);}
+    to { opacity: 1; transform: translateX(0);}
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let currentMeal = null;
+let meals = { breakfast: [], lunch: [], snacks: [], dinner: [] };
+let goalProtein = 60; // User-specific target
+
+// Show food modal
+function openFoodSearch(meal) {
+    currentMeal = meal;
+    document.getElementById('foodModal').style.display = 'block';
+    document.getElementById('foodSearchInput').value = '';
+    document.getElementById('foodSearchResults').innerHTML = '';
+}
+// Hide food modal
+function closeFoodModal() {
+    document.getElementById('foodModal').style.display = 'none';
+}
+// Search food from backend
+function searchFoodDB() {
+    let query = document.getElementById('foodSearchInput').value;
+    fetch(`/search_food?q=${encodeURIComponent(query)}`)
+        .then(r => r.json())
+        .then(data => {
+            let html = '';
+            data.forEach(item => {
+                html += `<li>
+                    <button type="button" onclick="selectFood('${item._id}', '${item.food_name}', ${item.energy_kcal || 0}, ${item.protein_g || 0}, ${item.carb_g || 0}, ${item.fat_g || 0})">
+                        ${item.food_name} (Cal: ${item.energy_kcal}, P: ${item.protein_g}g, C: ${item.carb_g}g, F: ${item.fat_g}g)
+                    </button></li>`;
+            });
+            document.getElementById('foodSearchResults').innerHTML = html || '<li>No results</li>';
+        });
+}
+// Select food and update meal log, then save
+function selectFood(id, name, cal, protein, carb, fat) {
+    closeFoodModal();
+    let food = { id, name, cal, protein, carb, fat };
+    meals[currentMeal].push(food);
+    updateMealList(currentMeal);
+    updateTotals();
+    saveDietToBackend(); // SAVE on each addition
+}
+// Render meal list for each meal
+function updateMealList(meal) {
+    let list = document.getElementById(meal + '-list');
+    list.innerHTML = '';
+    meals[meal].forEach(f => {
+        let li = document.createElement('li');
+        li.textContent = `${f.name} (${f.cal} kcal, P:${f.protein}g, C:${f.carb}g, F:${f.fat}g)`;
+        list.appendChild(li);
+    });
+}
+// Update total macros and calories
+function updateTotals() {
+    let tProtein = 0, tCarb = 0, tFat = 0, tCal = 0;
+    Object.values(meals).flat().forEach(f => {
+        tProtein += f.protein;
+        tCarb += f.carb;
+        tFat += f.fat;
+        tCal += f.cal;
+    });
+    document.getElementById('proteinTotal').textContent = tProtein;
+    document.getElementById('proteinGoal').textContent = goalProtein;
+    document.getElementById('carbTotal').textContent = tCarb;
+    document.getElementById('fatTotal').textContent = tFat;
+    document.getElementById('calTotal').textContent = tCal;
+}
+// Save diet log to backend via AJAX
+function saveDietToBackend() {
+    const payload = {
+        meals: meals,
+        calories_consumed: 0,
+        protein: 0,
+        carbs: 0,
+        fats: 0
+    };
+    Object.values(meals).flat().forEach(f => {
+        payload.calories_consumed += f.cal;
+        payload.protein += f.protein;
+        payload.carbs += f.carb;
+        payload.fats += f.fat;
+    });
+    fetch('/diet/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (!data.success) {
+            alert('Failed to save diet data.');
+        }
+    })
+    .catch(() => alert('Error saving diet data.'));
+}
+
+// DIET HISTORY CHART - replace dummy data as needed
+const ctx = document.getElementById('dietChart');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7', 'Day 8', 'Day 9', 'Day 10'],
+        datasets: [{
+            label: 'Calories Consumed',
+            data: [1800, 2000, 1900, 2100, 1850, 2000, 1950, 1900, 2050, 1950],
+            backgroundColor: '#FF3F7F',
+        }, {
+            label: 'Calorie Goal',
+            data: [2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000],
+            type: 'line',
+            borderColor: '#9929EA',
+            borderWidth: 2,
+            fill: false
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: { y: { beginAtZero: true } }
+    }
+});
+
+</script>
+{% endblock %}

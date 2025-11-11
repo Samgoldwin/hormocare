@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+ACTIVITY — HORMOCARE+
+{% endblock %}
+
+{% block content %}
+<div class="card" id="exercise-activity">
+  <h2 class="card-title">Choose Your Activity</h2>
+  <div class="option-group">
+    <button class="btn option-btn" data-type="aerobic">Aerobic</button>
+    <button class="btn option-btn" data-type="hiit">HIIT</button>
+    <button class="btn option-btn" data-type="yoga">Yoga</button>
+  </div>
+
+  <div class="timer-setup" style="margin-top:30px; display:none;">
+    <label for="timer">Select Duration:</label>
+    <select id="timer-select">
+      <option value="900">15 min</option>
+      <option value="1800">30 min</option>
+      <option value="custom">Other</option>
+    </select>
+    <input type="number" min="1" id="custom-timer" placeholder="Minutes" style="display:none;" />
+    <button class="btn" id="start-session">Start Session</button>
+  </div>
+
+  <div id="calorie-counter" style="display:none; margin:30px 0;">
+    <h2 style="text-align:center; color:#b40039;">Aerobic Calorie Calculator</h2>
+    <label for="activity">Aerobic Activity</label>
+    <select id="activity">
+      <option value="0">Select...</option>
+      <option value="5.0">Aerobic Dance Casual</option>
+      <option value="6.5">Aerobic Dance Moderate</option>
+      <option value="7">Aerobic Dance Intense</option>
+      						<option value="8.0">Basketball (Game)</option>
+						<option value="6.0">Basketball (Non-Game, General)</option>
+						<option value="4.5">Basketball (Shooting Baskets)</option>
+						<option value="8.0">Calisthenics (Intense)</option>
+						<option value="3.5">Calisthenics (Moderate)</option>
+						<option value="4.0">Cycling (5.5 mph)</option>
+						<option value="8.0">Cycling (12-13 mph)</option>
+						<option value="12.0">Cycling (16-19 mph, Racing)</option>
+						<option value="3.0">Dancing (Casual)</option>
+						<option value="5.5">Dancing (Fast)</option>
+						<option value="9.0">Football (Competitive)</option>
+						<option value="8.0">Football (Flag, Touch, General)</option>
+						<option value="2.5">Football (Playing Catch)</option>
+						<option value="3.0">Frisbie (General)</option>
+						<option value="8.0">Frisbie (Ultimate)</option>
+						<option value="4.5">Golf (Carry Clubs)</option>
+						<option value="3.5">Golf (with Cart)</option>
+						<option value="4.0">Gymnastics</option>
+						<option value="6.0">Hiking (Cross Country)</option>
+						<option value="3.0">Housework</option>
+						<option value="12.0">Jump Rope (Fast)</option>
+						<option value="8.0">Jump Rope (Slow)</option>
+						<option value="5.0">Kayaking</option>
+						<option value="7.0">Kickball</option>
+						<option value="1.0">Lying Quietly</option>
+						<option value="10.0">Martial Arts</option>
+						<option value="4.0">Motocross</option>
+						<option value="7.0">Racquetball (Casual)</option>
+						<option value="10.0">Racquetball (Competitive)</option>
+						<option value="8.0">Rock/Mountain Climbing</option>
+						<option value="11.0">Rollerblading/skating (Casual)</option>
+						<option value="12.0">Rollerblading/skating (Fast)</option>
+						<option value="10.5">Rowing Machine (Extreme)</option>
+						<option value="7.0">Rowing Machine (Moderate)</option>
+						<option value="7.0">Running (Jogging/General)</option>
+						<option value="8.0">Running (5 mph, 12min mile)</option>
+						<option value="10.0">Running (6 mph, 10min mile)</option>
+						<option value="11.5">Running (7 mph, 8.5min mile)</option>
+						<option value="13.5">Running (8 mph, 7.5min mile)</option>
+						<option value="16.0">Running (10 mph, 6min mile)</option>
+						<option value="9.0">Running (Cross Country)</option>
+						<option value="5.0">Snow Skiing (Downhill - General)</option>
+						<option value="6.0">Snow Skiing (Downhill - Moderate)</option>
+						<option value="8.0">Snow Skiing (Downhill - Extreme)</option>
+						<option value="7.0">Snow Skiing (Cross Country - General)</option>
+						<option value="8.0">Snow Skiing (Cross Country - Moderate)</option>
+						<option value="9.0">Snow Skiing (Cross Country - Brisk)</option>
+						<option value="8.0">Snow Shoeing</option>
+						<option value="1.5">Sitting (Office work)</option>
+						<option value="1.0">Sitting (Quietly)</option>
+						<option value="5.0">Skateboarding</option>
+						<option value="10.0">Soccer (Competitive)</option>
+						<option value="7.0">Soccer (Casual, General)</option>
+						<option value="5.0">Softball</option>
+						<option value="12.0">Squash</option>
+						<option value="8.0">Stair/Ladder Climbing</option>
+						<option value="2.3">Standing (Office work)</option>
+						<option value="1.0">Standing (Quietly)</option>
+						<option value="2.5">Stretching/Hatha Yoga</option>
+						<option value="7.0">Swimming (Casual)</option>
+						<option value="10.0">Swimming (Vigorous)</option>
+						<option value="4.0">Table Tennis/Ping Pong</option>
+						<option value="4.0">Tai Chi</option>
+						<option value="6.0">Tennis (Doubles)</option>
+						<option value="8.0">Tennis (Singles)</option>
+						<option value="3.0">Volleyball (Casual Indoor/Grass)</option>
+						<option value="8.0">Volleyball (Beach)</option>
+						<option value="8.0">Volleyball (Competitive)</option>
+						<option value="2.0">Walking (2 mph, Casual Pace)</option>
+						<option value="3.3">Walking (3 mph, Moderate Pace)</option>
+						<option value="3.8">Walking (3.5 mph, Brisk Pace)</option>
+						<option value="5.0">Walking (4 mph, Very Brisk Pace)</option>
+						<option value="9.0">Walking (5.0, Fast Pace)</option>
+						<option value="10.0">Water Polo</option>
+						<option value="6.0">Weight Training (Intense)</option>
+						<option value="3.0">Weight Training (Normal)</option>
+						<option value="5.5">Yardwork (Heavy)</option>
+						<option value="4.0">Yardwork (Regular)</option>
+      <!-- Add more as needed -->
+    </select>
+    <label>Your Weight: <strong>{{ user_weight }} kg</strong></label>
+    <label for="duration">Duration (minutes)</label>
+    <input type="number" id="duration" min="10" max="240" step="1" value="30">
+    <button class="btn" id="add-activity-btn">Add Activity</button>
+    <div class="result-show" id="showResult"></div>
+  </div>
+
+  <div id="session-status" style="margin-top:30px;">
+    <h3 id="sessionType"></h3>
+    <div id="main-timer"></div>
+    <div class="exercise-show" id="exercise-session"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>let selectedType;
+let exercises = [];
+let currentIdx = 0;
+let timerId = null;
+let isRest = false;
+
+document.querySelectorAll('.option-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    selectedType = this.getAttribute('data-type');
+    document.getElementById('sessionType').innerText = `Selected: ${selectedType[0].toUpperCase() + selectedType.slice(1)}`;
+    document.querySelector('.timer-setup').style.display = 'block';
+    document.getElementById('calorie-counter').style.display = (selectedType === 'aerobic') ? 'block' : 'none';
+  });
+});
+
+document.getElementById('timer-select').addEventListener('change', function() {
+  document.getElementById('custom-timer').style.display = (this.value === 'custom') ? 'inline-block' : 'none';
+});
+
+// Aerobic logic remains unchanged...
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function showExerciseFullscreen(ex) {
+  const fs = document.createElement('div');
+  fs.style.position = 'fixed';
+  fs.style.top = 0;
+  fs.style.left = 0;
+  fs.style.width = '100vw';
+  fs.style.height = '100vh';
+  fs.style.background = '#222';
+  fs.style.color = '#fff';
+  fs.style.display = 'flex';
+  fs.style.flexDirection = 'column';
+  fs.style.justifyContent = 'center';
+  fs.style.alignItems = 'center';
+  fs.style.zIndex = 9999;
+  fs.innerHTML = `
+    <h1 style="margin-bottom:20px; font-size:3rem;">${ex.name}</h1>
+    ${ex.img ? `<img src="${ex.img}" alt="${ex.name}" style="max-width:60vw; max-height:50vh; border-radius:12px; margin-bottom:30px;" />` : ""}
+    <div style="font-size:1.5rem; max-width:70vw;">${ex.instructions || ex.description}</div>
+    <button style="margin-top:40px; font-size:1.2rem; background:#fff; color:#333; padding:10px 32px; cursor:pointer; border-radius:10px;" onclick="this.parentNode.remove()">Close Fullscreen</button>
+  `;
+  document.body.appendChild(fs);
+}
+
+function displayExercise(idx) {
+  if (!exercises[idx]) return;
+  const ex = exercises[idx];
+  let html = `
+    <div class="exercise-card" style="margin:30px 0; text-align:center;">
+      <h2 style="font-size:2.5rem; color:#b40039; margin-bottom:18px;">${ex.name}</h2>
+      ${ex.img ? `<img src="${ex.img}" alt="${ex.name}" style="max-width:32vw; max-height:36vh; border-radius:12px; margin-bottom:24px; cursor:pointer;" onclick="showExerciseFullscreen(${JSON.stringify(ex).replace(/"/g, '&quot;')});" />` : ""}
+      <div style="font-size:1.3rem; margin-top:12px;">${ex.instructions || ex.description}</div>
+      <button id="fullscreen-btn" style="margin-top:20px; font-size:1.1rem; padding:7px 32px; border-radius:8px; cursor:pointer;">Fullscreen</button>
+    </div>
+  `;
+  document.getElementById('exercise-session').innerHTML = html;
+  document.getElementById('fullscreen-btn').onclick = function() { showExerciseFullscreen(ex); };
+}
+
+function displayRest(idx) {
+  let html = `
+    <div style="text-align:center; font-size:2rem; color:#b40039; margin:40px 0;">
+      <h2>Rest Time</h2>
+      <div style="font-size:1.6rem;">Next up: <strong>${exercises[idx] ? exercises[idx].name : "Session Over"}</strong></div>
+      <img src="https://media3.giphy.com/media/3o6MbdC0a3Ey3bKHEA/giphy.gif" style="max-width:180px; margin:34px auto; border-radius:20px;" />
+    </div>
+  `;
+  document.getElementById('exercise-session').innerHTML = html;
+}
+
+function startSession() {
+  if (selectedType === 'hiit' || selectedType === 'yoga') {
+    fetch(`/get_images?type=${selectedType}`)
+    .then(res => res.json())
+    .then(data => {
+      currentIdx = 0;
+      isRest = false;
+      exercises = shuffleArray(data);
+      if (exercises.length === 0) {
+        document.getElementById('exercise-session').innerHTML = `<p>No ${selectedType} exercises found.</p>`;
+        return;
+      }
+      runExerciseRound();
+    })
+    .catch(() => {
+      document.getElementById('exercise-session').innerHTML = "<p>Error loading exercises.</p>";
+    });
+  }
+}
+
+function runExerciseRound() {
+  // 1 min = 60s exercise, then 15s rest
+  let mainTimer = document.getElementById('main-timer');
+  let time = isRest ? 15 : 60; // seconds
+  mainTimer.innerText = isRest
+    ? `Rest: ${time}s`
+    : `Exercise: ${exercises[currentIdx] ? exercises[currentIdx].name : "Done"} — ${time}s`;
+
+  if (!isRest && exercises[currentIdx]) displayExercise(currentIdx);
+  if (isRest) displayRest(currentIdx + 1);
+
+  timerId = setInterval(() => {
+    time--;
+    mainTimer.innerText = isRest
+      ? `Rest: ${time}s`
+      : `Exercise: ${exercises[currentIdx] ? exercises[currentIdx].name : "Done"} — ${time}s`;
+    if (time <= 0) {
+      clearInterval(timerId);
+      if (isRest) {
+        currentIdx++;
+        if (currentIdx < exercises.length) {
+          isRest = false;
+          runExerciseRound();
+        } else {
+          document.getElementById('main-timer').innerText = "Session Complete!";
+          document.getElementById('exercise-session').innerHTML = `
+            <h2 style="text-align:center; color:#269947;">Great Job! 🎉</h2>
+            <p style="font-size:1.3rem; text-align:center;">You completed all exercises!</p>`;
+        }
+      } else {
+        isRest = true;
+        runExerciseRound();
+      }
+    }
+  }, 1000);
+}
+
+document.getElementById('start-session').onclick = function() {
+  startSession();
+};
+
+/* You can also clear previous timers or session in your selection handler if needed. */
+</script>
+{% endblock %}

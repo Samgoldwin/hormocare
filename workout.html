@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Physical Activity Calorie Counter</title>
+  <style>
+    body {
+      background: #ffe4ef;
+      font-family: 'Roboto', Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+    }
+    .counter-container {
+      background: #fff6fa;
+      border-radius: 22px;
+      box-shadow: 0 7px 24px rgba(255, 0, 98, 0.15);
+      padding: 36px 28px;
+      max-width: 420px;
+      margin: 3em auto;
+    }
+    h2 {
+      color: #b40039;
+      text-align: center;
+      margin-bottom: 32px;
+      font-size: 2em;
+      letter-spacing: 1px;
+    }
+    label {
+      color: #b40060;
+      font-weight: 600;
+      margin: 12px 0 8px 0;
+      display: block;
+      font-size: 1.1em;
+    }
+    input[type="number"], select {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ffa2c9;
+      margin-bottom: 18px;
+      font-size: 1em;
+      background: #fff0f7;
+      color: #c00042;
+    }
+    .result-show {
+      font-size: 1.5em;
+      margin-top: 24px;
+      text-align: center;
+      color: #dd0075;
+      padding: 16px;
+      background: #ffe2ef;
+      border-radius: 14px;
+      font-weight: bold;
+      box-shadow: 0 1px 7px rgba(255, 0, 98, 0.07);
+    }
+    button {
+      background: linear-gradient(90deg, #ff61a6 0%, #fd33db 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1em;
+      padding: 12px 0;
+      margin-top: 20px;
+      width: 100%;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 3px 9px rgba(255, 0, 98, 0.13);
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #fd33db 0%, #ff61a6 100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="counter-container">
+    <h2>Physical Activity Calorie Counter</h2>
+    <label for="activity">Activity</label>
+    <select id="activity">
+      <option value="0">Select...</option>
+      <option value="5.0">Aerobic Dance Casual</option>
+      <option value="6.5">Aerobic Dance Moderate</option>
+      <option value="7">Aerobic Dance Intense</option>
+      <option value="4.0">Cycling 5.5 mph</option>
+      <option value="8.0">Cycling 12-13 mph</option>
+      <option value="12.0">Cycling 16-19 mph, Racing</option>
+      <option value="8.0">Basketball Game</option>
+      <option value="3.0">Dancing Casual</option>
+      <option value="10.0">Martial Arts</option>
+      <option value="10.0">Soccer Competitive</option>
+      <option value="7.0">Swimming Casual</option>
+      <option value="10.0">Swimming Vigorous</option>
+      <option value="4.0">Walking 2 mph, Casual Pace</option>
+      <option value="9.0">Walking 5 mph, Fast Pace</option>
+      <option value="7.0">Running/Jogging, General</option>
+      <option value="10.0">Running 6 mph, 10min mile</option>
+      <!-- More activities can be added here -->
+    </select>
+
+    <label for="weight">Body Weight (kg)</label>
+    <input type="number" id="weight" min="30" max="200" step="0.1" value="60">
+
+    <label for="duration">Duration (minutes)</label>
+    <input type="number" id="duration" min="10" max="240" step="1" value="60">
+
+    <button onclick="calculateCalories()">Calculate Burn</button>
+    <div class="result-show" id="showResult">Calories burned will appear here</div>
+  </div>
+
+  <script>
+    function calculateCalories() {
+      var mets = parseFloat(document.getElementById('activity').value);
+      var weight = parseFloat(document.getElementById('weight').value);
+      var duration = parseFloat(document.getElementById('duration').value);
+      if(isNaN(mets) || mets === 0 || isNaN(weight) || isNaN(duration)) {
+        document.getElementById('showResult').innerText = "Please fill all fields.";
+        return;
+      }
+      // Formula: Calories = METs × Weight (kg) × Duration (hr)
+      var calories = mets * weight * (duration / 60);
+      document.getElementById('showResult').innerText = 
+        "You burned approximately " + calories.toFixed(1) + " kcal.";
+    }
+  </script>
+</body>
+</html>

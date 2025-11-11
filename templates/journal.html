@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Behavioral Journal - HORMOCARE+{% endblock %}
+
+{% block page_title %}Behavioral Journal{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 class="card-title">Mood Journal Calendar</h2>
+    <div id="calendar" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:8px; margin-bottom:16px;"></div>
+
+    <!-- Existing Modal Section ... -->
+
+    <div id="journal-modal" style="display:none; position:fixed; top:10%; left:50%; transform:translateX(-50%); background:var(--card-light); border-radius:12px; padding:25px; box-shadow:0 4px 20px rgba(0,0,0,0.1); max-width:400px; z-index:1000;">
+        <h3>Journal Entry for <span id="selected-date"></span></h3>
+        <form id="journal-form">
+            <label for="mood">How do you feel today? 🙂😔😠</label>
+            <select id="mood" name="mood" required>
+                <option value="">Select mood</option>
+                <option value="happy">Happy 🙂</option>
+                <option value="sad">Sad 😔</option>
+                <option value="angry">Angry 😠</option>
+                <option value="anxious">Anxious 😰</option>
+                <option value="neutral">Neutral 😐</option>
+            </select>
+            <label for="stress">Experienced any stress or anxiety? 💭</label>
+            <select id="stress" name="stress" required>
+                <option value="">Select</option>
+                <option value="yes">Yes 😰</option>
+                <option value="no">No 😌</option>
+            </select>
+            <label for="symptoms">Any PCOS symptoms affecting your mood? 🌺</label>
+            <textarea id="symptoms" name="symptoms" rows="3" placeholder="Describe symptoms..."></textarea>
+            <label for="notes">Anything else to share? ✍️</label>
+            <textarea id="notes" name="notes" rows="3" placeholder="Additional notes..."></textarea>
+            <div style="margin-top:15px; text-align:right;">
+                <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn" id="save-btn">Save</button>
+            </div>
+        </form>
+    </div>
+    <div id="modal-backdrop" style="display:none; position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.4); z-index:999;" onclick="closeModal()"></div>
+</div>
+
+<!-- Playlist Video Grid Section -->
+<div class="card" style="margin-top:24px;">
+    <h2 class="card-title">Calm Collection Playlist</h2>
+    <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;">
+        <iframe src="https://www.youtube.com/embed/xc8v-K8fXjs?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/4uSxFnAzLJU?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/5XHdAVHzGyQ?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/dtleQdBbG6E?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/GYRwxSnWcGM?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/M0ICDkQwn24?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/HXXClZohCkY?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/ImJs5eBuGEM?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/7b7NNzuSDgw?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/IAZD18C3YPY?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/Vlff9tPQzQ8?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/GgH6LZy8e_M?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/Sb0LyaDyyww?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/zCXcbugDKvc?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/MQLyLBdzMKI?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/uFyPQfLXg6c?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/V70ugWaGSAA?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/FFRyTd320MU?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/p1bTRED8cfI?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/izgWI-4D_Wc?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/ZHM807kfyqw?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+        <iframe src="https://www.youtube.com/embed/OHW6UDXBjO8?rel=0" allowfullscreen style="width:100%; aspect-ratio: 16/9; border:0;"></iframe>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const calendar = document.getElementById('calendar');
+const modal = document.getElementById('journal-modal');
+const backdrop = document.getElementById('modal-backdrop');
+const selectedDateSpan = document.getElementById('selected-date');
+const journalForm = document.getElementById('journal-form');
+const saveBtn = document.getElementById('save-btn');
+
+let todayEntryExists = false;
+
+function formatDate(year, month, day) {
+    return `${year}-${month.toString().padStart(2,'0')}-${day.toString().padStart(2,'0')}`;
+}
+
+// Create a prettier calendar grid for current month
+function renderCalendar(){
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    calendar.innerHTML = "";
+
+    // Get weekday of first day
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const todayStr = formatDate(year, month + 1, now.getDate());
+
+    // Pad first week with blanks
+    for(let i=0; i<firstDay; i++){
+        const emptyCell = document.createElement('div');
+        calendar.appendChild(emptyCell);
+    }
+
+    // Render days
+    for(let day = 1; day <= daysInMonth; day++) {
+        const dateStr = formatDate(year, month+1, day);
+        const dayCell = document.createElement('div');
+        dayCell.textContent = day;
+        dayCell.style.display = "flex";
+        dayCell.style.alignItems = "center";
+        dayCell.style.justifyContent = "center";
+        dayCell.style.height = "40px";
+        dayCell.style.borderRadius = "8px";
+        dayCell.style.backgroundColor = "var(--primary-lighter)";
+        dayCell.style.color = "var(--text-light)";
+        dayCell.style.cursor = "pointer";
+        dayCell.style.fontWeight = "600";
+        dayCell.id = "cell-"+dateStr;
+        dayCell.onclick = null;
+
+        if(dateStr === todayStr) {
+            // Highlight today with a border
+            dayCell.style.border = "2px solid var(--primary)";
+            dayCell.style.backgroundColor = "var(--card-dark)";
+            dayCell.style.color = "#fff";
+            dayCell.onclick = () => openModal(year, month+1, day);
+            // Check if note exists for today and color accordingly
+            fetch(`/api/journal?date=${dateStr}`)
+                .then(res => res.json())
+                .then(data => {
+                    if(data.exists) {
+                        // Darken cell more if note present
+                        todayEntryExists = true;
+                        dayCell.style.backgroundColor = "var(--primary-dark)";
+                        dayCell.style.color = "#fff";
+                    }
+                });
+        } else {
+            // Other days: show as read-only, gray
+            dayCell.style.backgroundColor = "#f1f1f1";
+            dayCell.style.color = "#aaa";
+            dayCell.style.cursor = "not-allowed";
+        }
+        calendar.appendChild(dayCell);
+    }
+}
+
+function openModal(year, month, day) {
+    const dateStr = formatDate(year, month, day);
+    selectedDateSpan.textContent = dateStr;
+    journalForm.reset();
+    modal.style.display = 'block';
+    backdrop.style.display = 'block';
+    saveBtn.style.display = "inline-block"; // Only show save for today
+
+    // Load today's entry and display in modal (optional, example logic)
+    fetch(`/api/journal?date=${dateStr}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.entry){
+                // Fill modal with saved entry, allow overwrite
+                journalForm.mood.value = data.entry.mood || "";
+                journalForm.stress.value = data.entry.stress || "";
+                journalForm.symptoms.value = data.entry.symptoms || "";
+                journalForm.notes.value = data.entry.notes || "";
+            }
+        });
+
+}
+
+function closeModal() {
+    modal.style.display = 'none';
+    backdrop.style.display = 'none';
+}
+
+journalForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = {
+        date: selectedDateSpan.textContent,
+        mood: journalForm.mood.value,
+        stress: journalForm.stress.value,
+        symptoms: journalForm.symptoms.value,
+        notes: journalForm.notes.value
+    };
+    fetch('/api/journal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).then(response => {
+        if(response.ok) {
+            alert('Journal entry saved.');
+            closeModal();
+            renderCalendar(); // Re-render to update today's cell shade
+        } else {
+            alert('Failed to save entry.');
+        }
+    });
+});
+
+renderCalendar();
+</script>
+{% endblock %}

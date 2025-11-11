@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register - HORMOCARE+</title>
+<style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; margin: 0; }
+    .register-container { max-width: 480px; margin: 40px auto; background: #fff; padding: 32px 28px 38px 28px; border-radius: 18px; box-shadow: 0 4px 30px rgba(245,38,83,0.12); }
+    h1 { color: #FF3F7F; text-align: center; margin-bottom: 19px; font-size: 2.2rem; font-weight: 700; }
+    .progress-bar { height: 8px; width: 100%; background: #ffecf4; border-radius: 5px; margin-bottom: 33px; }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#FF3F7F,#FF8FB3 90%); border-radius: 5px; transition: width 0.45s cubic-bezier(.6,.36,.42,1); }
+    .form-step { display: none; }
+    .form-step.active { display: block; animation: fadein 0.6s; }
+    @keyframes fadein { from { opacity: 0; transform:translateY(45px);} to { opacity: 1; transform:translateY(0px);} }
+    .question-label { display: block; font-size: 1.17rem; font-weight: 500; margin-bottom: 13px; color: #FF3F7F; }
+    .question-desc { font-size: 0.99rem; color: #585A76; margin-bottom: 10px; }
+    input, select, textarea { width: 100%; padding: 10px; margin-bottom: 7px; border-radius: 7px; font-size: 1.08rem; border: 2px solid #FF8FB3; box-sizing: border-box; background: #fff; }
+    select { min-height: 38px; }
+    select option { padding: 7px 0; font-size: 1rem; background: #fff7fb; }
+    select[multiple], select[multiple] option { height: auto !important; }
+    textarea { resize: vertical; }
+    .btn { width: 100%; padding: 13px; background: linear-gradient(135deg,#FF3F7F,#FF8FB3); color: #fff; border: none; border-radius: 10px; font-weight: 600; font-size: 1.09rem; transition: background .2s; margin-bottom: 7px; }
+    .btn:hover { background: linear-gradient(135deg,#CC3266,#FF3F7F);}
+    .field-warning { color:#FF3F7F; font-size:0.95rem; margin-bottom: 7px; }
+    .entryreview { background: #fff7fb; border-radius: 10px; padding:18px 14px; margin-bottom:12px; }
+    .reviewlabel { font-weight:500; color:#CC3266; margin-right:4px; }
+    .reviewvalue { color:#333; }
+    @media (max-width:500px) { .register-container { padding: 10vw 3vw 10vw 3vw; } h1 { font-size: 1.45rem; } }
+</style>
+</head>
+<body>
+<div class="register-container">
+  <h1>Register - HORMOCARE+</h1>
+  <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+  <form id="registerForm" novalidate autocomplete="off">
+    <!-- Step 1: Basic info -->
+    <div class="form-step active">
+      <label class="question-label">Full Name:</label>
+      <input name="full_name" type="text" required>
+      <div class="field-warning" id="warn_name"></div>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <!-- Step 2: Contact and password -->
+    <div class="form-step">
+      <label class="question-label">Email Address:</label>
+      <span class="question-desc">We'll never share your email with anyone.</span>
+      <input name="email" type="email" required autocomplete="off">
+      <div class="field-warning" id="warn_email"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <div class="form-step">
+      <label class="question-label">Choose a Password:</label>
+      <input name="password" type="password" required>
+      <div class="field-warning" id="warn_password"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <!-- Step 3: Personal details -->
+    <div class="form-step">
+      <label class="question-label">Age (years):</label>
+      <input name="age" type="number" min="10" max="90" required>
+      <div class="field-warning" id="warn_age"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <div class="form-step">
+      <label class="question-label">Gender:</label>
+      <select name="gender" required>
+        <option value="">Select gender</option>
+        <option value="female">Female</option>
+        <option value="male">Male</option>
+        <option value="other">Other / Prefer not to say</option>
+      </select>
+      <div class="field-warning" id="warn_gender"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <!-- Reason for using -->
+    <div class="form-step">
+      <label class="question-label">Why are you using HORMOCARE+?</label>
+      <span class="question-desc">Select the primary reason or health goal for your registration.</span>
+      <select name="usage_reason" required>
+        <option value="">Select your reason</option>
+        <option value="track_periods">Track periods & cycle</option>
+        <option value="care_pcos">Care for PCOS</option>
+        <option value="weight_loss_and_pcos">Lose weight & manage PCOS</option>
+        <option value="health_monitoring">General health & monitoring</option>
+        <option value="all">All of the above</option>
+      </select>
+      <div class="field-warning" id="warn_reason"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <!-- Allergies -->
+    <div class="form-step">
+      <label class="question-label">Do you have any food allergies?</label>
+      <span class="question-desc">Select all food allergies that apply (Ctrl/Command for multiple).</span>
+      <select name="allergies" multiple size="10" required>
+        <option value="milk">Milk</option>
+        <option value="eggs">Eggs</option>
+        <option value="fish">Fish</option>
+        <option value="crustacean_shellfish">Crustacean Shellfish</option>
+        <option value="tree_nuts">Tree Nuts</option>
+        <option value="peanuts">Peanuts</option>
+        <option value="wheat">Wheat</option>
+        <option value="soybeans">Soybeans</option>
+        <option value="sesame">Sesame</option>
+        <option value="lupin">Lupin</option>
+        <option value="celery">Celery</option>
+        <option value="mustard">Mustard</option>
+        <option value="sulfites">Sulfites</option>
+        <option value="none">No allergies</option>
+      </select>
+      <div class="field-warning" id="warn_allergy"></div>
+      <small>Hold Ctrl (Windows) or Command (Mac) to select multiple options.</small>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <!-- Menstrual info -->
+    <div class="form-step">
+      <label class="question-label">When did your last period start?</label>
+      <span class="question-desc">Please select the date your most recent period began.</span>
+      <input name="last_period_date" type="date" required>
+      <div class="field-warning" id="warn_perioddate"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <div class="form-step">
+      <label class="question-label">How long did your last period stay? (in days)</label>
+      <span class="question-desc">Enter the number of days your previous period lasted (typical is 3-7 days).</span>
+      <input name="period_duration" type="number" min="1" max="15" required>
+      <div class="field-warning" id="warn_periodlen"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <div class="form-step">
+      <label class="question-label">What's your typical cycle length? (days between 2 periods)</label>
+      <span class="question-desc">Average is about 28 days.</span>
+      <input name="cycle_length" type="number" min="15" max="60" required>
+      <div class="field-warning" id="warn_cyclelen"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <!-- PCOS/Pregnancy -->
+    <div class="form-step">
+      <label class="question-label">Have you ever been diagnosed with PCOS?</label>
+      <select name="pcos" required>
+        <option value="">Select</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+        <option value="not_sure">Not sure</option>
+      </select>
+      <div class="field-warning" id="warn_pcos"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <div class="form-step">
+      <label class="question-label">Are you currently pregnant?</label>
+      <select name="pregnant" required>
+        <option value="">Select</option>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+      <div class="field-warning" id="warn_pregnant"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <!-- Exercise -->
+    <div class="form-step">
+      <label class="question-label">Which exercises are you aiming for?</label>
+      <span class="question-desc">Choose all types of exercise you want to focus on (Ctrl/Command for multiple).</span>
+      <select name="exercise_type" multiple size="3" required>
+        <option value="aerobic">Aerobic (walking, cycling, swimming)</option>
+        <option value="hiit">HIIT (circuit training, tabata)</option>
+        <option value="stress_relief">Stress Relief (yoga, meditation, stretching)</option>
+      </select>
+      <div class="field-warning" id="warn_exercise"></div>
+      <small>Selection helps personalize activity and lifestyle plans.</small>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <!-- Physical info -->
+    <div class="form-step">
+      <label class="question-label">Current Weight (kg):</label>
+      <input name="weight" type="number" step="0.1" min="25" max="180" required>
+      <div class="field-warning" id="warn_weight"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <div class="form-step">
+      <label class="question-label">Height (cm):</label>
+      <input name="height" type="number" step="0.1" min="120" max="220" required>
+      <div class="field-warning" id="warn_height"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <div class="form-step">
+      <label class="question-label">BMI (auto-calculated):</label>
+      <input name="bmi" id="bmi" type="number" step="0.1" readonly>
+      <div class="field-warning" id="warn_bmi"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <!-- Calorie Deficit -->
+    <div class="form-step">
+      <label class="question-label">What's your target calorie deficit for your diet?</label>
+      <span class="question-desc">Choose how aggressive your weight loss plan should be.</span>
+      <select name="calorie_intensity" required>
+        <option value="">Choose your plan</option>
+        <option value="easy">Easy (~300 kcal deficit, lose ~0.3 kg/week)</option>
+        <option value="medium">Medium (~500 kcal deficit, lose ~0.5 kg/week)</option>
+        <option value="high">High (~700 kcal deficit, lose ~0.7 kg/week)</option>
+      </select>
+      <small>Easy: calorie need - 300 kcal<br>Medium: - 500 kcal<br>High: - 700 kcal</small>
+      <div class="field-warning" id="warn_calorie"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <!-- Medical/Family History -->
+    <div class="form-step">
+      <label class="question-label">Medical/Family History</label>
+      <span class="question-desc">Include diabetes, hypertension, thyroid, addictions, or any major health notes.</span>
+      <textarea name="basic_history" rows="3"></textarea>
+      <div class="field-warning" id="warn_medical"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button type="button" class="btn next-btn">Next</button>
+    </div>
+    <!-- Review screen -->
+    <div class="form-step">
+      <div class="entryreview" id="reviewScreen"></div>
+      <div class="field-warning" id="warn_submit"></div>
+      <button type="button" class="btn prev-btn">Back</button>
+      <button class="btn" type="submit">Confirm Register</button>
+    </div>
+  </form>
+</div>
+<script>
+const steps = document.querySelectorAll('.form-step');
+const progress = document.querySelector('.progress-bar-fill');
+let currentStep = 0;
+
+// Show step function
+function showStep(idx) {
+  steps.forEach((s, i) => s.classList.toggle('active', i === idx));
+  let percent = (idx) / (steps.length-1) * 100;
+  progress.style.width = percent + "%";
+  window.scrollTo(0,0);
+  // On last step: fill review
+  if (idx === steps.length-1) fillReview();
+}
+document.querySelectorAll('.next-btn').forEach(btn => {
+  btn.addEventListener('click', function(){
+    if (validateStep(currentStep)) {
+      if (currentStep < steps.length - 1) {
+        steps[currentStep].classList.remove('active');
+        currentStep++;
+        showStep(currentStep);
+      }
+    }
+  });
+});
+document.querySelectorAll('.prev-btn').forEach(btn => {
+  btn.addEventListener('click', function(){
+    if (currentStep > 0) {
+      steps[currentStep].classList.remove('active');
+      currentStep--;
+      showStep(currentStep);
+    }
+  });
+});
+
+// Auto-calculate BMI
+document.querySelector('input[name="weight"]').addEventListener('input', calcBMI);
+document.querySelector('input[name="height"]').addEventListener('input', calcBMI);
+function calcBMI() {
+  let w = parseFloat(document.querySelector('input[name="weight"]').value) || 0;
+  let h = parseFloat(document.querySelector('input[name="height"]').value) || 0;
+  if(w && h) {
+    let bmi = w / ((h/100)**2);
+    document.getElementById('bmi').value = bmi.toFixed(1);
+  }
+}
+
+// Validate on each step before moving to next
+function validateStep(idx) {
+  // clear warnings first
+  document.querySelectorAll('.field-warning').forEach(w=>w.textContent = '');
+  let valid = true;
+  // custom validations each step
+  if (idx === 0) {
+    let name = document.querySelector('input[name="full_name"]');
+    if (!name.value.trim()) { document.getElementById('warn_name').textContent = 'Name required'; valid=false; }
+  }
+  if (idx === 1) {
+    let email = document.querySelector('input[name="email"]').value.trim();
+    let emailValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/.test(email) && !email.endsWith('@mail.com');
+    if (!emailValid) {
+      document.getElementById('warn_email').textContent = 'Valid email required, @mail.com is not allowed';
+      valid=false;
+    }
+  }
+  if (idx === 2) {
+    let pwd = document.querySelector('input[name="password"]');
+    if (!pwd.value.trim() || pwd.value.length < 6) {
+      document.getElementById('warn_password').textContent = 'Password minimum 6 characters';
+      valid=false;
+    }
+  }
+  if (idx === 3) {
+    let age = document.querySelector('input[name="age"]');
+    if (!age.value || age.value<10 || age.value>90) {
+      document.getElementById('warn_age').textContent = 'Enter valid age (10-90)';
+      valid=false;
+    }
+  }
+  if (idx === 4) {
+    let gen = document.querySelector('select[name="gender"]');
+    if (!gen.value) { document.getElementById('warn_gender').textContent = 'Gender required'; valid=false;}
+  }
+  if (idx === 5) {
+    let reason = document.querySelector('select[name="usage_reason"]');
+    if (!reason.value) { document.getElementById('warn_reason').textContent = 'Reason required'; valid=false;}
+  }
+  if (idx === 6) {
+    let allergy = document.querySelector('select[name="allergies"]');
+    let selected = Array.from(allergy.selectedOptions);
+    if (!selected.length) { document.getElementById('warn_allergy').textContent = 'Select at least one'; valid=false;}
+  }
+  if (idx === 7) {
+    let date = document.querySelector('input[name="last_period_date"]');
+    if (!date.value) { document.getElementById('warn_perioddate').textContent = 'Period start date required'; valid=false;}
+  }
+  if (idx === 8) {
+    let pLen = document.querySelector('input[name="period_duration"]');
+    if (!pLen.value || pLen.value<1 || pLen.value>15) { document.getElementById('warn_periodlen').textContent = 'Enter days (1-15)'; valid=false;}
+  }
+  if (idx === 9) {
+    let cycLen = document.querySelector('input[name="cycle_length"]');
+    if (!cycLen.value || cycLen.value<15 || cycLen.value>60) { document.getElementById('warn_cyclelen').textContent = 'Cycle (15-60 days)'; valid=false;}
+  }
+  if (idx === 10) {
+    let pcos = document.querySelector('select[name="pcos"]');
+    if (!pcos.value) { document.getElementById('warn_pcos').textContent = 'Select one option'; valid=false;}
+  }
+  if (idx === 11) {
+    let preg = document.querySelector('select[name="pregnant"]');
+    if (!preg.value) { document.getElementById('warn_pregnant').textContent = 'Select one option'; valid=false;}
+  }
+  if (idx === 12) {
+    let exercise = document.querySelector('select[name="exercise_type"]');
+    let exSel = Array.from(exercise.selectedOptions);
+    if (!exSel.length) { document.getElementById('warn_exercise').textContent = 'Select exercise types'; valid=false;}
+  }
+  if (idx === 13) {
+    let weight = document.querySelector('input[name="weight"]');
+    if (!weight.value || weight.value<25 || weight.value>180) { document.getElementById('warn_weight').textContent = 'Weight (25-180kg)'; valid=false;}
+  }
+  if (idx === 14) {
+    let height = document.querySelector('input[name="height"]');
+    if (!height.value || height.value<120 || height.value>220) { document.getElementById('warn_height').textContent = 'Height (120-220cm)'; valid=false;}
+  }
+  if (idx === 15) {
+    let bmi = document.querySelector('input[name="bmi"]').value;
+    if (!bmi || bmi < 10 || bmi > 80) { document.getElementById('warn_bmi').textContent = 'Valid BMI required'; valid=false;}
+  }
+  if (idx === 16) {
+    let plan = document.querySelector('select[name="calorie_intensity"]');
+    if (!plan.value) { document.getElementById('warn_calorie').textContent = 'Select diet plan'; valid=false;}
+  }
+  if (idx === 17) {
+    let med = document.querySelector('textarea[name="basic_history"]');
+    // Not required
+  }
+  return valid;
+}
+
+// Review screen filling
+function fillReview() {
+  const fields = Array.from(document.forms[0].elements).filter(el=>el.name);
+  let review = '';
+  fields.forEach(el=>{
+    let label = el.parentNode.querySelector('.question-label');
+    let value;
+    if(el.type==="select-multiple") value = Array.from(el.selectedOptions).map(o=>o.textContent).join(', ');
+    else if(el.type==="select-one") value = el.selectedOptions[0]?.textContent||'';
+    else if(el.type==="password") value = '********';
+    else if(el.type==="textarea") value = el.value;
+    else value = el.value;
+    review += `<div><span class="reviewlabel">${label?.textContent||el.name}</span>: <span class="reviewvalue">${value}</span></div>`;
+  });
+  document.getElementById('reviewScreen').innerHTML = review + "<small>Review your entries before confirming registration.</small>";
+}
+
+// Submit handler
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if(!validateStep(currentStep)) {
+    document.getElementById('warn_submit').textContent = 'Please check entries above';
+    return;
+  }
+  document.getElementById('warn_submit').textContent = '';
+  // build data
+  const formData = {};
+  Array.from(this.elements)
+    .filter(el => el.name)
+    .forEach(el => {
+      if(el.type === "select-multiple") {
+        let vals = Array.from(el.selectedOptions).map(option => option.value);
+        formData[el.name] = vals;
+      } else {
+        formData[el.name] = el.value;
+      }
+    });
+  // Calorie calculations
+  const weight = parseFloat(formData['weight']) || 0;
+  const height = parseFloat(formData['height']) || 0;
+  const age = parseInt(formData['age']) || 0;
+  const gender = formData['gender'] || 'female';
+  let bmr;
+  if (gender === 'female') {
+    bmr = 655 + (9.6 * weight) + (1.8 * height) - (4.7 * age);
+  } else {
+    bmr = 66 + (13.7 * weight) + (5 * height) - (6.8 * age);
+  }
+  const dailyCalories = Math.round(bmr * 1.375);
+  formData['calorie_need'] = dailyCalories;
+  let deficit = 0;
+  if(formData['calorie_intensity'] === 'easy') deficit = 300;
+  else if(formData['calorie_intensity'] === 'medium') deficit = 500;
+  else if(formData['calorie_intensity'] === 'high') deficit = 700;
+  formData['target_calories'] = dailyCalories - deficit;
+  // Send to Flask backend
+  try {
+    const response = await fetch('/register', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(formData)
+    });
+    const data = await response.json();
+    if (data.success) {
+      window.location.href = '/login';
+    } else {
+      document.getElementById('warn_submit').textContent = data.message || 'Registration failed, please try again.';
+    }
+  } catch (err) {
+    document.getElementById('warn_submit').textContent = 'Connection error, please check all entries.';
+  }
+});
+showStep(currentStep);
+</script>
+</body>
+</html>
