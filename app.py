@@ -33,16 +33,26 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
 load_dotenv()
+print("DEBUG: Current working directory:", os.getcwd())
+print("DEBUG: .env exists?", os.path.exists('.env'))
+print("DEBUG: MONGO_URI (env):", os.getenv('MONGO_URI'))
+
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # for local testing only
 
 app = Flask(__name__)
 CORS(app)
-app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY", "your-secret-key-here")
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/hormocare'
+from flask_pymongo import PyMongo
+from pymongo import MongoClient
+app.config['MONGO_URI'] = os.getenv('MONGO_URI')
+import os
+app.secret_key = os.urandom(24)
 
+
+# Flask-PyMongo initializes with Atlas
 mongo = PyMongo(app)
-client = MongoClient('localhost', 27017)
+client = MongoClient(app.config['MONGO_URI'])
 
+# Use these throughout
 food_db = client['food_database']
 food_collection = food_db['food_nutrition']
 food_collection_diet = food_db['food_nutrition_diet']
@@ -51,6 +61,7 @@ hormocare_db = client['hormocare']
 collection = hormocare_db['exercises']
 users_collection = hormocare_db['users']
 weekly_diet_collection = hormocare_db['weekly_diet']
+
 
 # Google OAuth setup
 google_bp = make_google_blueprint(
