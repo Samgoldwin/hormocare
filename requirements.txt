@@ -1,6 +1,5 @@
 Flask==2.3.3
 Flask-Cors==4.0.0
-flask-pymongo==3.0.2
 pymongo==4.5.0
 flask-dance==6.2.2
 requests==2.31.0
@@ -9,3 +8,4 @@ Werkzeug==3.0.1
 bson==0.5.10
 reportlab==4.0.7
 gunicorn==21.2.0
+flask-pymongo==3.0.1
