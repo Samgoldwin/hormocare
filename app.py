@@ -3,7 +3,6 @@ import io
 import json
 import random
 import requests
-
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from functools import wraps
@@ -14,8 +13,6 @@ from flask import (
 )
 from flask_cors import CORS
 from flask_pymongo import PyMongo
-from pymongo import MongoClient
-from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_dance.contrib.google import make_google_blueprint, google
 
@@ -24,13 +21,35 @@ from reportlab.lib.pagesizes import letter, landscape, A4
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.enums import TA_CENTER
 
+# Load environment variables
+load_dotenv()
+print("DEBUG: Current working directory:", os.getcwd())
+print("DEBUG: .env exists?", os.path.exists('.env'))
+print("DEBUG: MONGO_URI (env):", os.getenv('MONGO_URI'))
 
-# For PDF generation (ReportLab, as needed for diet export)
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # local testing only
+
+app = Flask(__name__)
+CORS(app)
+app.secret_key = os.urandom(24)
+
+# MongoDB setup
+app.config['MONGO_URI'] = os.getenv('MONGO_URI')
+mongo = PyMongo(app)
+users_collection = mongo.db.users
+weekly_diet_collection = mongo.db.weekly_diet
+food_collection = mongo.db.food_nutrition
+food_collection_diet = mongo.db.food_nutrition_diet
+collection = mongo.db.exercises
+
+# Google OAuth setup
+google_bp = make_google_blueprint(
+    client_id=os.getenv("GOOGLE_CLIENT_ID", ""),
+    client_secret=os.getenv("GOOGLE_CLIENT_SECRET", ""),
+    scope=["profile", "email", "https://www.googleapis.com/auth/fitness.activity.read"]
+)
+app.register_blueprint(google_bp, url_prefix="/login")
 
 load_dotenv()
 print("DEBUG: Current working directory:", os.getcwd())
@@ -46,12 +65,10 @@ from pymongo import MongoClient
 app.config['MONGO_URI'] = os.getenv('MONGO_URI')
 import os
 app.secret_key = os.urandom(24)
-
-
 # Flask-PyMongo initializes with Atlas
 mongo = PyMongo(app)
 client = MongoClient(app.config['MONGO_URI'])
-
+from bson.objectid import ObjectId
 # Use these throughout
 food_db = client['food_database']
 food_collection = food_db['food_nutrition']
