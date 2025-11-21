@@ -13,37 +13,35 @@ from flask import (
 )
 from flask_cors import CORS
 from flask_pymongo import PyMongo
+from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_dance.contrib.google import make_google_blueprint, google
 
-# PDF generation
 from reportlab.lib.pagesizes import letter, landscape, A4
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 
-# Load environment variables
+# --- ENVIRONMENT SETUP ---
 load_dotenv()
-print("DEBUG: Current working directory:", os.getcwd())
-print("DEBUG: .env exists?", os.path.exists('.env'))
-print("DEBUG: MONGO_URI (env):", os.getenv('MONGO_URI'))
-
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # local testing only
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # for local dev only!
 
 app = Flask(__name__)
 CORS(app)
 app.secret_key = os.urandom(24)
 
-# MongoDB setup
+# --- DATABASE ---
 app.config['MONGO_URI'] = os.getenv('MONGO_URI')
 mongo = PyMongo(app)
+
+# Collections
 users_collection = mongo.db.users
 weekly_diet_collection = mongo.db.weekly_diet
 food_collection = mongo.db.food_nutrition
 food_collection_diet = mongo.db.food_nutrition_diet
-collection = mongo.db.exercises
+exercises_collection = mongo.db.exercises
 
-# Google OAuth setup
+# --- GOOGLE OAUTH ---
 google_bp = make_google_blueprint(
     client_id=os.getenv("GOOGLE_CLIENT_ID", ""),
     client_secret=os.getenv("GOOGLE_CLIENT_SECRET", ""),
@@ -51,59 +49,20 @@ google_bp = make_google_blueprint(
 )
 app.register_blueprint(google_bp, url_prefix="/login")
 
-load_dotenv()
-print("DEBUG: Current working directory:", os.getcwd())
-print("DEBUG: .env exists?", os.path.exists('.env'))
-print("DEBUG: MONGO_URI (env):", os.getenv('MONGO_URI'))
 
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # for local testing only
-
-app = Flask(__name__)
-CORS(app)
-from flask_pymongo import PyMongo
-from pymongo import MongoClient
-app.config['MONGO_URI'] = os.getenv('MONGO_URI')
-import os
-app.secret_key = os.urandom(24)
-# Flask-PyMongo initializes with Atlas
-mongo = PyMongo(app)
-client = MongoClient(app.config['MONGO_URI'])
-from bson.objectid import ObjectId
-# Use these throughout
-food_db = client['food_database']
-food_collection = food_db['food_nutrition']
-food_collection_diet = food_db['food_nutrition_diet']
-
-hormocare_db = client['hormocare']
-collection = hormocare_db['exercises']
-users_collection = hormocare_db['users']
-weekly_diet_collection = hormocare_db['weekly_diet']
-
-
-# Google OAuth setup
-google_bp = make_google_blueprint(
-    client_id=os.getenv("GOOGLE_CLIENT_ID", ""),
-    client_secret=os.getenv("GOOGLE_CLIENT_SECRET", ""),
-    scope=["profile", "email", "https://www.googleapis.com/auth/fitness.activity.read"]
-)
-app.register_blueprint(google_bp, url_prefix="/login")
-
-from datetime import datetime, timedelta
-
+# --- UTILITY ---
 @app.context_processor
 def utility_processor():
     def todatetime(strdate, fmt='%Y-%m-%d'):
         try:
             return datetime.strptime(strdate, fmt)
         except Exception:
-            return datetime.utcnow()  # fallback if invalid
-
+            return datetime.utcnow()
     def now():
         return datetime.utcnow()
-
     return dict(todatetime=todatetime, now=now, timedelta=timedelta)
 
-# Decorator to ensure login
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -113,13 +72,14 @@ def login_required(f):
     return decorated_function
 
 
-# Helper function: get user allergies safely
+# --- HELPERS ---
 def get_user_allergies(user_id):
     user = users_collection.find_one({'_id': ObjectId(user_id)})
     return user.get('allergies', []) if user else []
 
 
-# ROUTES
+# --- ROUTES ---
+
 @app.route('/')
 def index():
     if 'user_id' in session:
@@ -133,14 +93,13 @@ def register():
         data = request.get_json()
         if not data or 'email' not in data or not data['email']:
             return jsonify({'success': False, 'message': 'Email required'})
-        if mongo.db.users.find_one({'email': data['email']}):
+        if users_collection.find_one({'email': data['email']}):
             return jsonify({'success': False, 'message': 'Email already exists'})
         if 'password' not in data or not data['password']:
             return jsonify({'success': False, 'message': 'Password required'})
 
         hashed_password = generate_password_hash(data['password'])
         data['password'] = hashed_password
-
         data['created_at'] = datetime.utcnow()
         data['dark_mode'] = False
 
@@ -149,11 +108,10 @@ def register():
             if field in data and not isinstance(data[field], list):
                 data[field] = [data[field]]
 
-        user_id = mongo.db.users.insert_one(data).inserted_id
+        user_id = users_collection.insert_one(data).inserted_id
         session['user_id'] = str(user_id)
         session['email'] = data['email']
         return jsonify({'success': True})
-
     return render_template('register.html')
 
 
@@ -163,18 +121,45 @@ def login():
         data = request.get_json()
         if not data or 'email' not in data or 'password' not in data:
             return jsonify({'success': False, 'message': 'Email and password required'})
-
-        user = mongo.db.users.find_one({'email': data['email']})
+        user = users_collection.find_one({'email': data['email']})
         if user and check_password_hash(user['password'], data['password']):
             session['user_id'] = str(user['_id'])
             session['email'] = user['email']
             return jsonify({'success': True})
-
         return jsonify({'success': False, 'message': 'Invalid credentials'})
-
     return render_template('login.html')
 
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    user = users_collection.find_one({'_id': ObjectId(session['user_id'])})
+    today = str(datetime.utcnow().date())
+    name = user.get('full_name', 'User')
+    hour = datetime.now().hour
+    greeting = "Good morning" if 5 <= hour < 12 else ("Good afternoon" if 12 <= hour < 18 else "Good evening")
+
+    # Placeholder single-day fetch (customize)
+    diet_data = mongo.db.diet.find_one({'user_id': session['user_id'], 'date': today})
+    activity_data = mongo.db.activity.find_one({'user_id': session['user_id'], 'date': today})
+    calorie_limit = user.get('target_calories', 2000)
+    step_goal = user.get('step_goal', 6000)
+    activity_goal = user.get('activity_goal', 1)
+
+    return render_template(
+        'dashboard.html',
+        user=user, name=name, greeting=greeting,
+        calorie_limit=calorie_limit,
+        step_goal=step_goal, activity_goal=activity_goal,
+        diet=diet_data, activity=activity_data
+    )
+    
 @app.route('/logout')
 def logout():
     session.clear()
